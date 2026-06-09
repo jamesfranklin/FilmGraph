@@ -9,6 +9,7 @@ export function App() {
   useEffect(() => { api.films().then((r) => setFilms(r.items)).catch(console.error); }, []);
   useEffect(() => {
     if (!sel) return;
+    setSeries(null);
     api.venueSeries(sel).then((r) => setSeries(r.venue_series)).catch(console.error);
   }, [sel]);
 

@@ -8,8 +8,15 @@ import { peakNormalise } from "./normalise.js";
 function recordDate(rec) {
   const raw = rec.datetime || rec.date;
   if (!raw) return null;
+  // Bin by calendar date only (timezone-independent): take the YYYY-MM-DD
+  // prefix and construct a UTC date, so week boundaries never depend on the
+  // host clock's timezone. A cinema showtime belongs to the week of its local
+  // calendar date as written.
+  const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
   const d = new Date(raw);
-  return Number.isNaN(d.getTime()) ? null : d;
+  if (Number.isNaN(d.getTime())) return null;
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }
 
 /**
@@ -28,8 +35,10 @@ export function filmVenueSeries(showtimes) {
     const date = recordDate(rec);
     if (!date) { dropped++; continue; }
     const v = rec.venue || {};
+    if (!v.name) { dropped++; continue; }   // a record with no venue is unusable
     const id = v.id || venueId(v.name, v.city, v.country);
-    const sessions = rec.sessions != null ? Number(rec.sessions) : 1;
+    const n = Number(rec.sessions);
+    const sessions = Number.isFinite(n) && rec.sessions != null ? n : 1;
 
     const existing = venueAgg.get(id) || { id, name: v.name, city: v.city, country: v.country, sessions: 0 };
     existing.sessions += sessions;
@@ -43,7 +52,7 @@ export function filmVenueSeries(showtimes) {
 
   const keys = [...weekVenues.keys()].sort();
   const weeks = keys.length ? weekRange(keys[0], keys[keys.length - 1]) : [];
-  const venuesRaw = weeks.map((w) => (weekVenues.get(w) ? weekVenues.get(w).size : 0));
+  const venuesRaw = weeks.map((w) => { const s = weekVenues.get(w); return s ? s.size : 0; });
   const sessionsRaw = weeks.map((w) => weekSessions.get(w) || 0);
 
   return {

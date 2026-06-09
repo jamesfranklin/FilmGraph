@@ -32,3 +32,33 @@ test("aggregated {date, sessions} records are honoured", () => {
   assert.deepEqual(b.series.sessionsRaw, [1, 1]);
   assert.equal(b.venues.length, 1);
 });
+
+test("records with no usable date or no venue are dropped and excluded", () => {
+  const r = filmVenueSeries([
+    { venue: { name: "X", city: "Y", country: "GB" }, datetime: "nonsense" },
+    { venue: { name: "X", city: "Y", country: "GB" } },           // no date
+    { date: "2025-05-08", sessions: 1 },                            // no venue
+    { venue: { name: "X", city: "Y", country: "GB" }, date: "2025-05-08" },
+  ]);
+  assert.equal(r.dropped, 3);
+  assert.deepEqual(r.series.weeks, ["2025-W19"]);
+  assert.equal(r.venues.length, 1);
+});
+
+test("gap weeks inside the span are zero-filled", () => {
+  const r = filmVenueSeries([
+    { venue: { name: "X", city: "Y", country: "GB" }, date: "2025-05-08" }, // W19
+    { venue: { name: "X", city: "Y", country: "GB" }, date: "2025-05-22" }, // W21
+  ]);
+  assert.deepEqual(r.series.weeks, ["2025-W19", "2025-W20", "2025-W21"]);
+  assert.deepEqual(r.series.venuesRaw, [1, 0, 1]);
+});
+
+test("evening datetime bins by calendar date regardless of timezone", () => {
+  // 2025-05-11 is a Sunday → ISO week 2025-W19. The naive evening time must not
+  // roll it into W20 under a western timezone.
+  const r = filmVenueSeries([
+    { venue: { name: "X", city: "Y", country: "GB" }, datetime: "2025-05-11T23:30:00" },
+  ]);
+  assert.deepEqual(r.series.weeks, ["2025-W19"]);
+});
