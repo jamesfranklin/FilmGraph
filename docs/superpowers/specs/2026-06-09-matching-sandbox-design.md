@@ -21,8 +21,9 @@ These findings shaped every decision below.
 
 - **The distance engine already exists, in JavaScript.** `FilmOS-demo/server/src/fingerprint.js` (~525 lines) is a complete, tuned engine: DTW (`dtwSim`), weighted Jaccard, normalised Levenshtein sequence similarity, a **spine-relative percentile amplitude** model (`buildPercentiles`), `absent ≠ zero` handling, breadth/confidence, and per-dimension **contributions**. It is served over an Express + SQLite sidecar (`server/src/index.js`, `/api/films/:id/similar`). The "first validation run" in the source spec was produced by this prototype, not by this repo (which has no matching code).
 - **The venue dimension is the bug the spec describes — and it is not yet DTW.** Box office already computes `dtwSim` over a scale-free weekly per-screen curve (`fingerprint.js:397`). **Venue uses `weightedJaccard` over venue _names_ + geo + magnitude-closeness** (`fingerprint.js:382-388`) — pure co-presence of _which_ cinemas, with no temporal shape. This is the "festival collapses to presence" failure living inside venue.
-- **The venue trajectory is recoverable but must be parsed.** The Assemble `playdates_schedule` connector (`server/src/connectors/assemble.js`) collapses each venue to a single `sessions` count + a freeform `timestamp` string. The cached strings are mostly **date ranges** — `"May 8 - May 14"` (one week), `"May 15 - May 28"` (two weeks), `"March 1 only"` (single day), `"Opens June 19"`, `"Now Playing"` — which parse into per-venue date intervals and aggregate into a weekly series.
-- **Density today is thin.** 31 of 352 cached films have venue data; only ~6 are genuinely venue-dense (171 / 80 / 43 / 37 venues, then a cliff). A real distribution needs a wider cohort pull.
+- **`playdates_schedule` is the wrong source — it is a lossy public-facing UI endpoint.** It collapses each venue to a single `sessions` count + a freeform `timestamp` string (`"May 8 - May 14"`, `"March 1 only"`, `"Opens June 19"`, `"Now Playing"`). That is fine for a buy-tickets page and useless as a measurement substrate: `"Now Playing"` has no dates at all. **The accurate source is the full showtimes export** — every dated showtime per venue — from the Assemble showtimes MySQL. From that we build complete venue sets and an exact weekly series; no fragile string parsing.
+- **The read-only export pattern already exists.** [seed/venues/export.py](seed/venues/export.py) reads the same Assemble showtimes MySQL (`MYSQL_READ_URL`, read-only) and dumps the `venues` table to `venues.jsonl`, assigning **deterministic venue IDs** (`uuid5` of name+city+country). The full-showtimes dump is its sibling and reuses that same venue-ID scheme, so showtime venues reconcile with `Venue` nodes (and with the deferred screenings data later).
+- **Density today is thin.** 31 of 352 cached films have venue data; only ~6 are genuinely venue-dense (171 / 80 / 43 / 37 venues, then a cliff). The full export plus a wider cohort pull is what gives venue a real distribution.
 - **The non-desktop web path already exists.** `npm run dev` runs the API + web app on `localhost:1420` with no Tauri — "the exact frontend the Tauri shell renders" (FilmOS-demo README). Stripping the desktop shell is not surgery; we lift that path and drop `src-tauri/`.
 
 ---
@@ -34,7 +35,7 @@ These findings shaped every decision below.
 | Where compute lives | **Node sidecar that emits a trace the UI renders** | The UI computes nothing; it renders the trace. Single source of truth for the math. |
 | Engine strategy | **Lift & extend the existing JS engine** — do not re-port to Python | Avoids re-porting 525 lines of tuned math (drift risk; violates "don't rewrite working code"). The spec needs no upstream write-back until venue is _proven_; then port that one function as a deliberate Python PR. |
 | Repo location | **New `workbench/` in this repo (`FilmGraph-workbench`)** | Matches the repo the spec names; clean "instrument, not demo" separation. |
-| Data sources | Legacy API (discovery) + `playdates_schedule` (trajectory) + screenings (deferred) | See §4. |
+| Data sources | Legacy API (discovery) + **full showtimes dump** (trajectory) + `playdates_schedule` (fallback) + screenings (deferred) | See §5. |
 | Venue series channels | **Two channels: active-venues AND sessions, per week, peak-normalised** | Scale-free shape comparison; richest signal for proving the dimension. |
 
 ---
@@ -49,7 +50,8 @@ workbench/
       profile.js          # profile builder — extended to read venue weekly series
       explain.js          # NEW: emits the per-dimension introspection trace
       connectors/
-        assemble.js       # EXTENDED: parse timestamp strings → weekly two-channel series
+        showtimes_dump.js    # NEW: ingest full showtimes dump → weekly two-channel series (PRIMARY)
+        assemble.js          # FALLBACK: parse playdates_schedule timestamp strings (low-fidelity)
         legacy_discovery.js  # NEW: pull new film IDs via Assemble MXID (cohort widening)
         tmdb.js mrqe.js boxoffice.js   # lifted as-is
       index.js            # trimmed API: films, similar, + /explain
@@ -69,18 +71,39 @@ workbench/
 
 ## 5. Phase 1 — The denser cohort + the venue series
 
-The load-bearing data work. Three inputs:
+The load-bearing data work. The trajectory source is the **full showtimes dump**, not the public endpoint.
 
 1. **Legacy API (by Assemble MXID) → film discovery.** A new `legacy_discovery.js` connector pulls the list of films to add to the spine (the cohort-widening source). It returns _which films_, not showtimes.
-2. **`playdates_schedule` → venue trajectory.** For each discovered/cohort film, the existing endpoint returns per-venue records. We **extend `assemble.js`** with a `timestamp`-string parser:
-   - `"May 8 - May 14"` → 1-week interval; `"May 8 - May 21"` → 2 weeks; `"March 1 only"` → single day; `"Opens June 19"` → open-ended from a date; `"Now Playing"` → active-at-pull-time (flagged imprecise); unparseable → recorded as unparsed (visible in introspection, not silently dropped).
-   - Per-venue intervals aggregate into a **film-level weekly two-channel series**: per ISO week, (a) count of active venues, (b) total sessions. Peak-normalised per channel → scale-free shape.
+2. **Full showtimes dump → venue trajectory (PRIMARY).** A JSON dump of every dated showtime per film, exported read-only from the Assemble showtimes MySQL and **handed to this build** (the exporter itself is out of scope — produced externally, mirroring `seed/venues/export.py`). The workbench ingests the dump and builds, per film:
+   - **Venue set** — the venues that showed the film, with total sessions, each carrying a deterministic venue ID (`uuid5` of name+city+country) so it reconciles with the `Venue` nodes.
+   - **Weekly two-channel series** — bin showtime datetimes by ISO week → per week, (a) count of active venues, (b) total sessions. Peak-normalised per channel → scale-free shape. This is the exact expansion/contraction curve DTW compares.
    - Persisted on `EXHIBITED_AT` edges + a film-level `venue_series`, so the representation is inspectable and reproducible.
-3. **Screenings (older films) — DEFERRED.** A separate historical source needing normalisation + venue entity-matching. Not on the critical path for venue-honesty; added as a follow-on enrichment once DTW venue is proven.
+3. **`playdates_schedule` → FALLBACK only.** For films with no dump coverage, fall back to the existing endpoint and parse its freeform `timestamp` strings into coarse intervals (`"May 8 - May 14"` → 1 week; `"March 1 only"` → 1 day; `"Now Playing"` → active-at-pull-time, flagged imprecise; unparseable → recorded as unparsed, visible in introspection). Fallback-sourced series are **flagged as low-fidelity** so the introspection panel never presents them as equal to dump-derived series.
+4. **Screenings (older films) — DEFERRED.** A separate historical source needing normalisation + venue entity-matching. Not on the critical path for venue-honesty; added as a follow-on enrichment once DTW venue is proven.
+
+### Expected dump shape (the contract the producer matches)
+
+Per-showtime granularity, grouped by TMDB id. Minimum required fields:
+
+```json
+{
+  "<tmdb_id>": {
+    "tmdb_id": 12345,
+    "title": "…",
+    "showtimes": [
+      { "venue": { "name": "…", "city": "…", "country": "GB" }, "datetime": "2025-05-08T19:30:00" }
+    ]
+  }
+}
+```
+
+- One row per showtime (sessions are then derived by counting); an aggregated variant — `{ "venue": {…}, "date": "2025-05-08", "sessions": 3 }` — is also accepted.
+- `venue` must carry enough identity (name + city + country) to compute the deterministic venue ID, or may include a precomputed `id`.
+- `datetime` or `date` is required (this is the whole point of using the dump over the public endpoint).
 
 **Spine model:** Doc Society + Assemble as tags over one `films` table; matching always runs against the whole spine, never bounded by cohort.
 
-**Done when:** venue weekly series exist across the Assemble films, the spine is venue-dense enough for a real distribution, and a venue-weighted match produces a spread of scores — not a cliff to zero.
+**Done when:** dump-derived weekly venue series exist across the Assemble films, the spine is venue-dense enough for a real distribution, and a venue-weighted match produces a spread of scores — not a cliff to zero.
 
 ---
 
@@ -133,8 +156,8 @@ The weight controls already exist (`Comparables.tsx:112`); we lift and adjust th
 
 Node test runner, written alongside the code (per workflow):
 
-- `timestamp` → interval parser: a table of real strings drawn from the Assemble cache (`"May 8 - May 14"`, `"March 1 only"`, `"Opens June 19"`, `"Now Playing"`, plus malformed inputs).
-- Weekly two-channel series aggregation (interval overlap → per-week counts; peak-normalisation).
+- Dump ingestion → weekly two-channel series: showtime datetimes binned by ISO week → per-week active-venue and session counts; peak-normalisation; deterministic venue-ID reconciliation against `venues.jsonl`. Cover both the per-showtime and aggregated dump variants.
+- `playdates_schedule` fallback parser: a table of real strings (`"May 8 - May 14"`, `"March 1 only"`, `"Opens June 19"`, `"Now Playing"`, malformed inputs) → coarse intervals, with the low-fidelity flag set.
 - `dtwSim` shape-invariance (scaled-but-same-shape series → high similarity; same-scale-different-shape → low).
 - Perturbation stability (small parameter nudge → bounded ranking change).
 - `explain` trace fidelity: the trace's per-dimension distance equals `similarity()`'s for the same pair/weights.
@@ -168,9 +191,9 @@ Typecheck clean. No edits to lifted-as-is engine internals beyond the venue dist
 
 ## 12. Open dependencies (needed at implementation time)
 
+- **The full showtimes dump** for the cohort films, in the shape defined in §5 (handed over; the exporter is out of scope). This is the primary trajectory source — Phase 1's `EXHIBITED_AT` series and Phase 3's DTW depend on it. The Assemble showtimes MySQL (`MYSQL_READ_URL`) is the confirmed source of truth; it is joinable to TMDB.
 - **Legacy discovery API:** endpoint, auth, and how an Assemble **MXID** maps to a film (and to TMDB id, for cross-referencing TMDB / box office / press). Needed to build `legacy_discovery.js`.
 - **Cohort list / density target:** how many films, and the source of the MXIDs to expand the venue-dense spine.
-- **`playdates_schedule` auth/limits** for a wider pull than the cached set.
 
 ---
 
