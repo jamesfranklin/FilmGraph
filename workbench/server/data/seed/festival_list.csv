@@ -1,0 +1,16 @@
+festival_id,name,city,country,tier,festival_type,website,founded_year
+sundance,Sundance Film Festival,Park City,US,a_list,film,https://www.sundance.org,1985
+cannes,Cannes Film Festival,Cannes,FR,a_list,film,https://www.festival-cannes.com,1946
+berlinale,Berlin International Film Festival,Berlin,DE,a_list,film,https://www.berlinale.de,1951
+venice,Venice Film Festival,Venice,IT,a_list,film,https://www.labiennale.org,1932
+tiff,Toronto International Film Festival,Toronto,CA,a_list,film,https://www.tiff.net,1976
+locarno,Locarno Film Festival,Locarno,CH,a_list,film,https://www.locarnofestival.ch,1946
+san_sebastian,San Sebastián International Film Festival,San Sebastián,ES,a_list,film,https://www.sansebastianfestival.com,1953
+idfa,International Documentary Film Festival Amsterdam,Amsterdam,NL,a_list,documentary,https://www.idfa.nl,1988
+sheffield_docfest,Sheffield DocFest,Sheffield,GB,major,documentary,https://www.sheffdocfest.com,1994
+hot_docs,Hot Docs Canadian International Documentary Festival,Toronto,CA,major,documentary,https://www.hotdocs.ca,1993
+sxsw,SXSW Film & TV Festival,Austin,US,major,film,https://www.sxsw.com,1994
+tribeca,Tribeca Festival,New York,US,major,film,https://www.tribecafilm.com,2002
+rotterdam,International Film Festival Rotterdam,Rotterdam,NL,major,film,https://iffr.com,1972
+telluride,Telluride Film Festival,Telluride,US,major,film,https://telluridefilmfestival.org,1974
+london,BFI London Film Festival,London,GB,major,film,https://www.bfi.org.uk,1957
