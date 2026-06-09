@@ -7,3 +7,4 @@ server/data/cache/
 server/data/*.local.json
 .env
 dist/
+*.tsbuildinfo
