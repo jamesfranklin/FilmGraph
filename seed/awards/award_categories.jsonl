@@ -1,0 +1,51 @@
+{"id": "17fa6b12-b133-5807-9cc7-02bebac6e367", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Picture", "discipline": "production"}
+{"id": "9085680c-487a-5014-b9a6-fd90b8bc711d", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Director", "discipline": "directing"}
+{"id": "fa5d515a-4f3f-53ef-b48a-645ac5a6f541", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Actor in a Leading Role", "discipline": "acting"}
+{"id": "357bcba0-1e28-5686-b6cb-0125271f8d66", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Actress in a Leading Role", "discipline": "acting"}
+{"id": "9dcd3941-6924-5944-92ff-54bb0ee96f19", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Actor in a Supporting Role", "discipline": "acting"}
+{"id": "3ace5e1b-e6c5-5f08-942b-73f00c4133c8", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Actress in a Supporting Role", "discipline": "acting"}
+{"id": "b48af9e1-2a62-5e75-9ecf-7f7a8924ba60", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best International Feature Film", "discipline": "international"}
+{"id": "777ee772-62e8-5ac0-a064-9b50a2ce2385", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Documentary Feature", "discipline": "documentary"}
+{"id": "206b716d-5698-5d6d-911f-534d9dad1bb0", "award_body_id": "02027340-32b9-5c90-8aa8-6f4cfff3b7b9", "name": "Best Animated Feature", "discipline": "production"}
+{"id": "0e3fe86f-ac78-51e7-b97a-4867584b4a23", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Film", "discipline": "production"}
+{"id": "8a367a69-cb7a-568b-86f3-9cf4e2244b6b", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Director", "discipline": "directing"}
+{"id": "c81208f2-f906-580d-af75-26dc438bbd4b", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Leading Actor", "discipline": "acting"}
+{"id": "ab964c9e-b561-5343-9d94-e7067dbc1f82", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Leading Actress", "discipline": "acting"}
+{"id": "16450ebf-c9ca-5ade-abe5-49db542f589b", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Supporting Actor", "discipline": "acting"}
+{"id": "07aff624-1f63-5c83-bd8e-2c7389db6a13", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Supporting Actress", "discipline": "acting"}
+{"id": "767ae490-909d-5ab2-a635-564357616c5e", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Film Not in the English Language", "discipline": "international"}
+{"id": "78600c64-3239-5c9e-934f-41aff496a340", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Documentary", "discipline": "documentary"}
+{"id": "29445c3a-f794-56b1-8a3b-6bc6da1157c8", "award_body_id": "036d5b47-09c2-58ce-8adc-aebecd031114", "name": "Best Animated Film", "discipline": "production"}
+{"id": "35634356-940c-59fc-8fec-206c38217072", "award_body_id": "96e143a6-376e-53d3-a4ef-fe966bd1c2ed", "name": "Best Motion Picture - Drama", "discipline": "production"}
+{"id": "0d7fca13-24f1-5636-9d3c-f0b050a2fdf6", "award_body_id": "96e143a6-376e-53d3-a4ef-fe966bd1c2ed", "name": "Best Director - Motion Picture", "discipline": "directing"}
+{"id": "b788b532-eaab-56cd-bcb4-f7d84ae1d77c", "award_body_id": "96e143a6-376e-53d3-a4ef-fe966bd1c2ed", "name": "Best Actor in a Motion Picture - Drama", "discipline": "acting"}
+{"id": "bbd2550d-7aa4-534a-a19f-1e82b9489871", "award_body_id": "96e143a6-376e-53d3-a4ef-fe966bd1c2ed", "name": "Best Actress in a Motion Picture - Drama", "discipline": "acting"}
+{"id": "a16fcacf-6b20-5112-b49b-23e04705ed7c", "award_body_id": "96e143a6-376e-53d3-a4ef-fe966bd1c2ed", "name": "Best Motion Picture - Foreign Language", "discipline": "international"}
+{"id": "562a5ba5-c387-54fe-bd3f-df6371db4297", "award_body_id": "3ca5e92c-bdb5-53bc-8c41-c4d0cd9842b3", "name": "Outstanding Performance by a Cast in a Motion Picture", "discipline": "production"}
+{"id": "ff8e8b71-88ad-53b9-a46d-510037e3d001", "award_body_id": "3ca5e92c-bdb5-53bc-8c41-c4d0cd9842b3", "name": "Outstanding Performance by a Male Actor in a Leading Role", "discipline": "acting"}
+{"id": "796d4f5a-1328-5a18-b9e0-9d90b8a1196d", "award_body_id": "3ca5e92c-bdb5-53bc-8c41-c4d0cd9842b3", "name": "Outstanding Performance by a Female Actor in a Leading Role", "discipline": "acting"}
+{"id": "56f2e7b6-516c-5e85-b1c1-263840874c82", "award_body_id": "3ca5e92c-bdb5-53bc-8c41-c4d0cd9842b3", "name": "Outstanding Performance by a Male Actor in a Supporting Role", "discipline": "acting"}
+{"id": "cbb82838-dc77-58d9-bc04-c4dc89707588", "award_body_id": "3ca5e92c-bdb5-53bc-8c41-c4d0cd9842b3", "name": "Outstanding Performance by a Female Actor in a Supporting Role", "discipline": "acting"}
+{"id": "76a1a47a-6f0c-5c17-9e0a-299333a38cdf", "award_body_id": "c3500b6d-371e-5401-b86f-4988a968b0b8", "name": "Best Picture", "discipline": "production"}
+{"id": "82c452d5-be3f-5287-9c62-98d3d8dfd1ab", "award_body_id": "c3500b6d-371e-5401-b86f-4988a968b0b8", "name": "Best Director", "discipline": "directing"}
+{"id": "02d0ad10-8a5a-56d0-a41d-a620e2f052d5", "award_body_id": "c3500b6d-371e-5401-b86f-4988a968b0b8", "name": "Best Actor", "discipline": "acting"}
+{"id": "238f0524-f3ca-5846-bc80-1a646111f09b", "award_body_id": "c3500b6d-371e-5401-b86f-4988a968b0b8", "name": "Best Actress", "discipline": "acting"}
+{"id": "9d0b8c89-c02d-52d3-8fc5-b417ff43d143", "award_body_id": "c3500b6d-371e-5401-b86f-4988a968b0b8", "name": "Best Supporting Actor", "discipline": "acting"}
+{"id": "51cda750-c8f9-5b53-8c71-acf8777cbead", "award_body_id": "c3500b6d-371e-5401-b86f-4988a968b0b8", "name": "Best Supporting Actress", "discipline": "acting"}
+{"id": "2b921946-ed58-5421-9a23-400495d69440", "award_body_id": "236a5795-020a-543d-ad8a-9fc794ac5073", "name": "Outstanding Directorial Achievement in Feature Film", "discipline": "directing"}
+{"id": "8d7be9c0-3293-5119-be02-d4918866637d", "award_body_id": "e393b045-9d6b-5bb0-94db-0557bc1399e1", "name": "Best Original Screenplay", "discipline": "writing"}
+{"id": "9b709070-f5fb-5119-ba3e-9d21a482ddc3", "award_body_id": "e393b045-9d6b-5bb0-94db-0557bc1399e1", "name": "Best Adapted Screenplay", "discipline": "writing"}
+{"id": "5a9a0e6f-570c-55f2-8e66-110bb0942145", "award_body_id": "cc948583-42b4-5757-ada1-589bde7d4999", "name": "Best Feature", "discipline": "production"}
+{"id": "35519e43-1f5d-5b2a-a0fc-f8635599790f", "award_body_id": "cc948583-42b4-5757-ada1-589bde7d4999", "name": "Best Director", "discipline": "directing"}
+{"id": "5c108a89-52e0-5c41-87d1-f3763361cdbe", "award_body_id": "cc948583-42b4-5757-ada1-589bde7d4999", "name": "Best Lead Performance", "discipline": "acting"}
+{"id": "db68007d-6d8c-5b25-b410-9261e3c52b2b", "award_body_id": "cc948583-42b4-5757-ada1-589bde7d4999", "name": "Best Supporting Performance", "discipline": "acting"}
+{"id": "8908688f-2838-5149-a500-b55b1637786c", "award_body_id": "cc948583-42b4-5757-ada1-589bde7d4999", "name": "Best International Film", "discipline": "international"}
+{"id": "93700dbb-6579-5c7b-90c6-d0b8ea5ff3bd", "award_body_id": "cc948583-42b4-5757-ada1-589bde7d4999", "name": "Best Documentary Feature", "discipline": "documentary"}
+{"id": "53534a8b-f3fb-5fb5-83fd-6b87a261128d", "award_body_id": "f6387ebd-e405-5fde-a52d-504a09941609", "name": "European Film", "discipline": "production"}
+{"id": "c1a91a37-d07a-53d0-8298-a22541577f81", "award_body_id": "f6387ebd-e405-5fde-a52d-504a09941609", "name": "European Director", "discipline": "directing"}
+{"id": "5731fb9d-332b-5d31-9c15-7e9ebff979d4", "award_body_id": "f6387ebd-e405-5fde-a52d-504a09941609", "name": "European Actor", "discipline": "acting"}
+{"id": "a8f6c6b9-d905-5b07-9f4f-50a2f659b1c2", "award_body_id": "f6387ebd-e405-5fde-a52d-504a09941609", "name": "European Actress", "discipline": "acting"}
+{"id": "c73ed480-5e91-5c37-b84e-058475e9a96f", "award_body_id": "746df550-0867-51c7-8a10-4bf15d66bf43", "name": "Best Film", "discipline": "production"}
+{"id": "44050a9a-9e49-59d3-9f54-61e55d06ddb0", "award_body_id": "746df550-0867-51c7-8a10-4bf15d66bf43", "name": "Best Director", "discipline": "directing"}
+{"id": "e3618770-bc2f-5c54-bcf8-50ab75029e2a", "award_body_id": "746df550-0867-51c7-8a10-4bf15d66bf43", "name": "Best Actor", "discipline": "acting"}
+{"id": "c9b3844f-3f06-5995-8675-3a8a7cd23690", "award_body_id": "746df550-0867-51c7-8a10-4bf15d66bf43", "name": "Best Actress", "discipline": "acting"}

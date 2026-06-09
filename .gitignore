@@ -1,0 +1,24 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Caches and generated data
+cache/
+*.pyc
+__pycache__/
+
+# Generated seed output (never committed)
+seed/films/films.jsonl
+seed/festivals/output/
+seed/box_office/output/
+
+# Sync registry (contains private instance endpoints)
+sync/registry.json
+filmgraph/sync/registry.json
+
+# Local virtualenv / tooling
+.venv/
+.pytest_cache/
+*.egg-info/
+.DS_Store
