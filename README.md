@@ -12,7 +12,7 @@ Its founding principle is that **FilmGraph models a release, not a film** — ev
 > tooling to run your own instance. It contains no proprietary data and
 > no enrichment that depends on private sources.
 
-## The FilmOS project is based on this data standard.##
+## The FilmOS project is based on this data standard.
 
 Looking for an easy way to join in? The FilmOS project aims to create a desktop app that allows anyone to easily run their own FilmGraph node and exchange. The wider community can then both use and contribute to the FilmGraph collective knowledge. In addition it allows for the sharing of private data by sharing the weighting within the graph not the actual dataset which remains local to each contributor.
 
