@@ -1,7 +1,26 @@
-tmdb_id,title_hint
-496243,Parasite
-376867,Moonlight
-419430,Get Out
-391713,Lady Bird
-581734,Nomadland
-394117,The Florida Project
+tmdb_id,title_hint,tier
+496243,Parasite,core
+376867,Moonlight,core
+419430,Get Out,core
+391713,Lady Bird,core
+581734,Nomadland,core
+394117,The Florida Project,core
+566213,Honeyland,core
+293310,Citizenfour,core
+531428,Portrait of a Lady on Fire,extended
+758866,Drive My Car,extended
+660120,The Worst Person in the World,extended
+426426,Roma,extended
+440298,Cold War,extended
+505192,Shoplifters,extended
+60243,A Separation,extended
+254320,The Lobster,extended
+965150,Aftersun,extended
+666277,Past Lives,extended
+374475,Toni Erdmann,extended
+517814,Capernaum,extended
+565716,American Factory,extended
+451995,Faces Places,extended
+618363,Collective,extended
+680813,Flee,extended
+776527,Summer of Soul,extended

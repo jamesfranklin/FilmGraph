@@ -8,6 +8,14 @@ This directory provides a tool for instance operators to populate Film nodes fro
 | File | Committed? | Notes |
 | --- | --- | --- |
 | `film_ids.csv` | **yes** | A seed list of TMDB IDs. IDs are not TMDB content. |
+
+The committed corpus is a curated set of festival-circuit films (narrative and
+documentary) spanning multiple years and territories. Each row carries a `tier`:
+
+- **`core`** — a small set (the original six plus two documentaries) suited to
+  quick demos and local smoke checks.
+- **`extended`** — the larger curated showcase, exercising awards, festivals,
+  distributors, and reviews across the schema.
 | `tmdb_fetch.py` | **yes** | The fetch tool. |
 | `films.jsonl` | **no** | Generated locally by the tool. Gitignored. Never committed. |
 
@@ -25,12 +33,17 @@ This directory provides a tool for instance operators to populate Film nodes fro
 ```bash
 export TMDB_API_KEY=your_tmdb_api_key_here
 python seed/films/tmdb_fetch.py --ids seed/films/film_ids.csv --output seed/films/films.jsonl
+
+# Or fetch just the small core tier:
+python seed/films/tmdb_fetch.py --tier core --output seed/films/films.jsonl
 ```
 
 The tool:
 
-- Reads TMDB IDs from `film_ids.csv` (first column; a `title_hint` column is
-  for human verification only).
+- Reads TMDB IDs from `film_ids.csv` (first column; the `title_hint` column is
+  for human verification only, and the `tier` column selects the corpus tier).
+  Pass `--tier core` or `--tier extended` to fetch only that tier; the default
+  `--tier all` fetches every film.
 - Caches each raw response to `cache/tmdb/{id}.json` (gitignored).
 - Is resumable via a checkpoint — re-running skips IDs already fetched.
 - Rate limits to 40 requests / 10 seconds.
