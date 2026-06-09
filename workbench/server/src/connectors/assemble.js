@@ -59,3 +59,37 @@ export async function run({ db, films, onProgress, getJsonImpl = getJson }) {
   writeCache("assemble", cache);
   return { processed, filmsWithVenues, venues, failed };
 }
+
+const MONTHS = {
+  january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+  july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+};
+
+function toIso(year, monthName, day) {
+  const m = MONTHS[String(monthName).toLowerCase()];
+  if (!m || !day) return null;
+  return `${year}-${String(m).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/**
+ * Parse a public-endpoint timestamp string into a coarse interval.
+ * @returns {{ start: string|null, end: string|null, fidelity: "range"|"day"|"open"|"none" }}
+ */
+export function parseTimestamp(raw, year) {
+  const s = String(raw || "").trim();
+  let m;
+  // "May 8 - May 14"
+  if ((m = s.match(/^([A-Za-z]+)\s+(\d{1,2})\s*[-–]\s*([A-Za-z]+)\s+(\d{1,2})$/))) {
+    return { start: toIso(year, m[1], m[2]), end: toIso(year, m[3], m[4]), fidelity: "range" };
+  }
+  // "March 1 only"
+  if ((m = s.match(/^([A-Za-z]+)\s+(\d{1,2})\s+only$/i))) {
+    const d = toIso(year, m[1], m[2]);
+    return { start: d, end: d, fidelity: "day" };
+  }
+  // "Opens June 19"
+  if ((m = s.match(/^opens\s+([A-Za-z]+)\s+(\d{1,2})$/i))) {
+    return { start: toIso(year, m[1], m[2]), end: null, fidelity: "open" };
+  }
+  return { start: null, end: null, fidelity: "none" };
+}
