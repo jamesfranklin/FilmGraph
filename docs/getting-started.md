@@ -37,11 +37,14 @@ python -m filmgraph.engine.ingest.load_funders
 python -m filmgraph.engine.ingest.load_awards
 python -m filmgraph.engine.ingest.load_distributors
 python -m filmgraph.engine.ingest.load_practitioners
+python -m filmgraph.engine.ingest.load_publications
 python -m filmgraph.engine.ingest.load_festivals
 ```
 
 Films come from TMDB and require your own API key — see
-[`seed/films/README.md`](../seed/films/README.md).
+[`seed/films/README.md`](../seed/films/README.md). The committed corpus is a
+curated festival-circuit set split into `core` and `extended` tiers; pass
+`--tier core` to `tmdb_fetch.py` for just the small set.
 
 ## 4. Query
 

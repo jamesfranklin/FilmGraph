@@ -102,15 +102,33 @@ class RateLimiter:
         self._times.append(time.monotonic())
 
 
-def read_ids(ids_path: Path) -> list[int]:
+def read_ids(ids_path: Path, tier: str = "all") -> list[int]:
+    """Read TMDB ids from the seed CSV, optionally filtered by corpus tier.
+
+    The CSV header is ``tmdb_id,title_hint,tier``. The ``tier`` column is
+    optional per row; a blank or missing tier is treated as ``core`` so older
+    two-column files keep working. ``tier="all"`` (the default) returns every
+    row regardless of tier.
+    """
+    wanted = tier.strip().lower()
     ids: list[int] = []
     with ids_path.open(newline="", encoding="utf-8") as fh:
         reader = csv.reader(fh)
+        tier_idx: int | None = None
         for row in reader:
             if not row:
                 continue
             value = row[0].strip()
-            if not value or value.lower() == "tmdb_id" or value.startswith("#"):
+            if not value or value.startswith("#"):
+                continue
+            if value.lower() == "tmdb_id":  # header row
+                header = [c.strip().lower() for c in row]
+                tier_idx = header.index("tier") if "tier" in header else None
+                continue
+            row_tier = "core"
+            if tier_idx is not None and len(row) > tier_idx:
+                row_tier = row[tier_idx].strip().lower() or "core"
+            if wanted != "all" and row_tier != wanted:
                 continue
             ids.append(int(value))
     return ids
@@ -120,7 +138,7 @@ def _cache_path(tmdb_id: int) -> Path:
     return Path(config.TMDB_CACHE_PATH) / f"{tmdb_id}.json"
 
 
-def fetch_all(ids_path: Path, output_path: Path, reset: bool = False) -> int:
+def fetch_all(ids_path: Path, output_path: Path, reset: bool = False, tier: str = "all") -> int:
     checkpoint = Checkpoint("tmdb_fetch")
     if reset:
         checkpoint.reset()
@@ -134,7 +152,7 @@ def fetch_all(ids_path: Path, output_path: Path, reset: bool = False) -> int:
     records: list[dict] = []
     fetched = cached = failed = invalid = 0
 
-    for tmdb_id in read_ids(ids_path):
+    for tmdb_id in read_ids(ids_path, tier=tier):
         cache_file = _cache_path(tmdb_id)
         try:
             if cache_file.exists():
@@ -178,8 +196,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ids", default="seed/films/film_ids.csv")
     parser.add_argument("--output", default="seed/films/films.jsonl")
     parser.add_argument("--reset", action="store_true")
+    parser.add_argument(
+        "--tier",
+        choices=["core", "extended", "all"],
+        default="all",
+        help="Fetch only films in this corpus tier (default: all).",
+    )
     args = parser.parse_args(argv)
-    return fetch_all(Path(args.ids), Path(args.output), reset=args.reset)
+    return fetch_all(Path(args.ids), Path(args.output), reset=args.reset, tier=args.tier)
 
 
 if __name__ == "__main__":

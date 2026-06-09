@@ -30,12 +30,13 @@ python -m filmgraph.engine.ingest.load_funders
 python -m filmgraph.engine.ingest.load_awards
 python -m filmgraph.engine.ingest.load_distributors
 python -m filmgraph.engine.ingest.load_practitioners
+python -m filmgraph.engine.ingest.load_publications       # Publication nodes
 python -m filmgraph.engine.ingest.load_festivals          # Festival nodes
 python -m filmgraph.engine.ingest.load_festivals --edges   # + SCREENED_AT from scraper output
 
 # Films (requires TMDB_API_KEY):
 export TMDB_API_KEY=...
-python seed/films/tmdb_fetch.py
+python seed/films/tmdb_fetch.py                # all tiers; or --tier core
 python -m filmgraph.engine.ingest.load_films
 ```
 
