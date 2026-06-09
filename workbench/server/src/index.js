@@ -143,6 +143,14 @@ app.get("/api/films/:id/trajectory", (req, res) => {
   ok(res, { film: { id: row.id, title: row.title, year: row.year }, completeness: row.completeness, trajectory: traj });
 });
 
+app.get("/api/films/:id/venue-series", (req, res) => {
+  const row = getFilmRow(req.params.id);
+  if (!row) return notFound(res, "Film");
+  const node = getNode(req.params.id);
+  const series = node && node.venue_series ? node.venue_series : null;
+  ok(res, { film: { id: row.id, title: row.title, year: row.year }, venue_series: series });
+});
+
 // The comparables engine.
 app.get("/api/films/:id/similar", (req, res) => {
   const targetStored = getFilmFingerprint(req.params.id);
