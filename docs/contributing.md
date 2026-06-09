@@ -30,8 +30,7 @@ pytest -q
 ## Adding seed data
 
 Each seed directory has a `schema.md` describing its format. Append your records,
-validate, and open a PR. The lowest-friction path for festival programme data is
-the [generic festival converter](converters.md).
+validate, and open a PR.
 
 ## Schema changes
 
