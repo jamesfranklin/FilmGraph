@@ -88,6 +88,7 @@ export function buildProfile(db, filmId) {
     practitioners,
     availability,
     venues,
+    venueSeries: f.venue_series || null,
     press,
     pressAggregate: { metric: f.press_metric ?? null, reviews: f.press_reviews ?? null },
     boxOffice: f.box_office || null,
