@@ -1,0 +1,18 @@
+{
+  "name": "theatre-matching-ranker",
+  "version": "0.1.0",
+  "description": "Weighted scoring function that ranks venues for a film by release fit. Example model demonstrating the manifest contract.",
+  "publisher": "example",
+  "model_type": "scoring_function",
+  "entrypoint": "scorer.py:score",
+  "requires": {
+    "nodes": ["Film", "Venue"],
+    "edges": ["SCREENED_AT", "DISTRIBUTED_BY"]
+  },
+  "network_access": false,
+  "parameters": {
+    "independent_affinity": 0.45,
+    "country_match": 0.35,
+    "festival_pedigree": 0.20
+  }
+}
