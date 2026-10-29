@@ -11,6 +11,9 @@ Conventions:
 - All node records may carry an optional `_source` provenance string; for
   manually curated seeds it documents where the record came from. It is required
   for `Practitioner` seed records and is stripped before Neo4j ingest.
+- All node records may carry an optional `_ext` object: node-specific data a
+  consumer may ignore (e.g. a private node's box-office series). It is the only
+  escape hatch past `additionalProperties: false`; document what you put there.
 - FilmGraph is a **global** standard — no geographic scope restrictions.
 
 ---
@@ -19,11 +22,15 @@ Conventions:
 
 | Property | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `id` | UUID | yes | |
-| `tmdb_id` | integer | yes | Unique (enforced by DB constraint) |
-| `imdb_id` | string | no | |
-| `title` | string | yes | |
-| `year` | integer | yes | |
+| `id` | UUID | yes | Opaque, node-minted, immutable. Edges reference this. |
+| `slug` | string | yes | Derived match key: `<english-title>-<year>[-<n>]`. See [Film identity](../docs/node-contract.md#film-identity). Not globally unique. |
+| `external_ids` | object | no | `tmdb`, `imdb`, `letterboxd`, `wikidata`, `eidr`, plus any operator-specific key. Matched before `slug`. |
+| `tmdb_id` | integer | no | *Deprecated (v1.1)* — use `external_ids.tmdb`. Optional since 1.1.0. |
+| `imdb_id` | string | no | *Deprecated (v1.1)* — use `external_ids.imdb`. |
+| `title` | string | yes | Display title (English where one exists). |
+| `title_en` | string \| null | no | English title, or `null` when the film has none. |
+| `original_title` | string | no | |
+| `year` | integer | yes | Release year used in the slug — see identity rules for which year. |
 | `origin_country` | string[] | no | ISO alpha-2 |
 | `language` | string | no | |
 | `genres` | string[] | no | |

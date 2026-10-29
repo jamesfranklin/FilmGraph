@@ -3,18 +3,22 @@
 The FilmGraph API is **read-only** and rate limited. Interactive docs are served
 at `/docs` (Swagger) and `/redoc`.
 
+This page documents the reference node. The behaviour every node must share —
+manifest, film identity and references, the composite document, MCP tools,
+conformance — is specified in [`node-contract.md`](node-contract.md).
+
 ## Envelope
 
 Every data response is wrapped:
 
 ```json
-{ "schema_version": "1.0.0", "data": { ... } }
+{ "schema_version": "1.1.0", "data": { ... } }
 ```
 
 List responses carry pagination metadata:
 
 ```json
-{ "schema_version": "1.0.0", "data": { "page": 1, "limit": 20, "count": 42, "items": [ ... ] } }
+{ "schema_version": "1.1.0", "data": { "page": 1, "limit": 20, "count": 42, "items": [ ... ] } }
 ```
 
 All list endpoints accept `?page=1&limit=20` (max `limit` 100).
@@ -27,24 +31,43 @@ All list endpoints accept `?page=1&limit=20` (max `limit` 100).
 Supply the key as the `X-API-Key` header or `?api_key=` query parameter. The key
 is the value of `FILMGRAPH_API_KEY`. Exceeding the limit returns `429`.
 
+Set `FILMGRAPH_NODE_AUTH=required` to run the reference as a private node: every
+path except the manifest and schema then returns `401` without a valid key.
+
+## Errors
+
+```json
+{ "schema_version": "1.1.0", "error": "not_found", "detail": "Film tmdb:1 not found" }
+```
+
+Codes: `bad_request` (400), `unauthorized` (401), `forbidden` (403),
+`not_found` (404), `rate_limit_exceeded` (429).
+
 ## Endpoints
 
 ### Meta
 | Method | Path | Description |
 | --- | --- | --- |
 | GET | `/` | Health check + schema version |
+| GET | `/.well-known/filmgraph` | Node manifest (always unauthenticated) |
 | GET | `/schema` | Full schema (node + edge types inlined) |
 | GET | `/schema/version` | Schema version string |
 
 ### Films
+
+`{ref}` is a UUID, a slug (`parasite-2019`) or a prefixed external id
+(`tmdb:496243`, `imdb:tt6751668`, `wikidata:Q61448040`). Bare integers are not accepted.
+
 | Method | Path | Description |
 | --- | --- | --- |
 | GET | `/films/search?q=` | Title search |
-| GET | `/films/{tmdb_id}` | Film node |
-| GET | `/films/{tmdb_id}/festivals` | Festival screenings |
-| GET | `/films/{tmdb_id}/awards` | Nominations and wins |
-| GET | `/films/{tmdb_id}/distributors` | Distribution by territory |
-| GET | `/films/{tmdb_id}/similar` | Similar films |
+| GET | `/films/resolve?title=&year=&tmdb=&imdb=…` | Multi-strategy match with confidence |
+| GET | `/films/{ref}` | Film node |
+| GET | `/films/{ref}/graph` | Composite document: film + edges grouped by type |
+| GET | `/films/{ref}/festivals` | Festival screenings |
+| GET | `/films/{ref}/awards` | Nominations and wins |
+| GET | `/films/{ref}/distributors` | Distribution by territory |
+| GET | `/films/{ref}/similar` | Similar films |
 
 ### Venues
 | Method | Path | Description |

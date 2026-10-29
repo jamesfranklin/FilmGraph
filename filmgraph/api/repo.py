@@ -21,7 +21,7 @@ import json
 from pathlib import Path
 
 from filmgraph import config
-from filmgraph.engine.ingest.ids import festival_node_id
+from filmgraph.engine.ingest.ids import festival_node_id, film_slug, parse_film_ref
 
 # Minimal ISO 3166-1 alpha-2 names for territories referenced by the seed data.
 ISO_NAMES = {
@@ -55,12 +55,71 @@ class Repo:
     """Interface implemented by both backends."""
 
     # Films
-    def get_film(self, tmdb_id: int) -> dict | None: ...
-    def film_festivals(self, tmdb_id: int) -> list[dict]: ...
-    def film_awards(self, tmdb_id: int) -> list[dict]: ...
-    def film_distributors(self, tmdb_id: int) -> list[dict]: ...
-    def film_similar(self, tmdb_id: int) -> list[dict]: ...
+    # ``ref`` is a film reference per docs/node-contract.md: a UUID, a slug, or
+    # a prefixed external id such as ``tmdb:496243``. ``resolve_ref`` turns it
+    # into a Film node (or None); the traversal methods take the resolved node.
+    def resolve_ref(self, ref: str) -> dict | None: ...
+    def film_festivals(self, film: dict) -> list[dict]: ...
+    def film_awards(self, film: dict) -> list[dict]: ...
+    def film_distributors(self, film: dict) -> list[dict]: ...
+    def film_similar(self, film: dict) -> list[dict]: ...
     def search_films(self, q: str) -> list[dict]: ...
+    def all_films(self) -> list[dict]: ...
+
+    def slug_collisions(self, slug: str) -> list[dict]:
+        """Films whose slug is ``<slug>-<n>`` (same title and year, different film)."""
+        prefix = slug + "-"
+        return [f for f in self.all_films() if f["slug"].startswith(prefix) and f["slug"][len(prefix):].isdigit()]
+
+    def get_film(self, ref: str) -> dict | None:
+        return self.resolve_ref(ref)
+
+    def film_graph(self, film: dict) -> dict:
+        """Composite document body (docs/node-contract.md#composite-film-document).
+        Backends that hold edge properties should override to include them."""
+        edges: dict[str, list[dict]] = {}
+        for edge_type, targets in (
+            ("SCREENED_AT", self.film_festivals(film)),
+            ("DISTRIBUTED_BY", self.film_distributors(film)),
+            ("SIMILAR_TO", self.film_similar(film)),
+        ):
+            edges[edge_type] = [{"edge": {}, "target": t} for t in targets]
+        awards = self.film_awards(film)
+        edges["NOMINATED_FOR"] = [{"edge": {}, "target": t} for t in awards]
+        return {"film": film, "edges": edges}
+
+    def resolve_film(self, title: str | None, year: int | None, external_ids: dict) -> list[dict]:
+        """Multi-strategy match with confidence; see the contract."""
+        out: list[dict] = []
+        seen: set[str] = set()
+
+        def add(film, confidence, matched_on):
+            if film["id"] in seen:
+                return
+            seen.add(film["id"])
+            out.append({"film": film, "confidence": confidence, "matched_on": matched_on})
+
+        for system, value in external_ids.items():
+            hit = self.resolve_ref(f"{system}:{value}")
+            if hit:
+                add(hit, 1.0, f"external_ids.{system}")
+        if title and year:
+            try:
+                slug = film_slug(title, int(year))
+            except ValueError:
+                slug = None
+            if slug:
+                hit = self.resolve_ref(slug)
+                if hit:
+                    add(hit, 0.8, "slug")
+                for other in self.slug_collisions(slug):
+                    add(other, 0.7, "slug_collision")
+                base = slug.rsplit("-", 1)[0]
+                for dy in (-1, 1):
+                    hit = self.resolve_ref(f"{base}-{int(year) + dy}")
+                    if hit:
+                        add(hit, 0.6, "slug_year_adjacent")
+        return out
 
     # Venues
     def get_venue(self, venue_id: str) -> dict | None: ...
@@ -96,7 +155,7 @@ class Repo:
 
 
 class InMemoryRepo(Repo):
-    def __init__(self) -> None:
+    def __init__(self, films_path: Path | None = None) -> None:
         seed = config.SEED_DIR
         self.venues = {v["id"]: v for v in _read_jsonl(seed / "venues" / "venues.jsonl")}
         self.organisations = {o["id"]: o for o in _read_jsonl(seed / "funders" / "funders.jsonl")}
@@ -131,29 +190,61 @@ class InMemoryRepo(Repo):
                         node["founded_year"] = int(row["founded_year"])
                     self.festivals[node["id"]] = node
 
-        self.films_by_tmdb = {}
-        for f in _read_jsonl(seed / "films" / "films.jsonl"):
-            self.films_by_tmdb[int(f["tmdb_id"])] = f
+        self.films: dict[str, dict] = {}
+        self.films_by_slug: dict[str, dict] = {}
+        self.films_by_ext: dict[tuple[str, str], dict] = {}
+        for f in _read_jsonl(films_path or seed / "films" / "films.jsonl"):
+            self.add_film(f)
+
+    def add_film(self, f: dict) -> dict:
+        """Index a Film record, back-filling v1.1 identity fields from v1 ones."""
+        f = dict(f)
+        ext = dict(f.get("external_ids") or {})
+        if f.get("tmdb_id") is not None:
+            ext.setdefault("tmdb", int(f["tmdb_id"]))
+        if f.get("imdb_id"):
+            ext.setdefault("imdb", f["imdb_id"])
+        if ext:
+            f["external_ids"] = ext
+        if not f.get("slug"):
+            base = film_slug(f["title"], f["year"])
+            slug, n = base, 2
+            while slug in self.films_by_slug and self.films_by_slug[slug]["id"] != f["id"]:
+                slug, n = f"{base}-{n}", n + 1
+            f["slug"] = slug
+        self.films[f["id"]] = f
+        self.films_by_slug[f["slug"]] = f
+        for k, v in ext.items():
+            self.films_by_ext[(k, str(v))] = f
+        return f
 
     # Films
-    def get_film(self, tmdb_id):
-        return self.films_by_tmdb.get(tmdb_id)
+    def resolve_ref(self, ref):
+        kind, value = parse_film_ref(ref)
+        if kind == "uuid":
+            return self.films.get(value)
+        if kind == "slug":
+            return self.films_by_slug.get(value)
+        return self.films_by_ext.get((kind, value))
 
-    def film_festivals(self, tmdb_id):
+    def all_films(self):
+        return list(self.films.values())
+
+    def film_festivals(self, film):
         return []
 
-    def film_awards(self, tmdb_id):
+    def film_awards(self, film):
         return []
 
-    def film_distributors(self, tmdb_id):
+    def film_distributors(self, film):
         return []
 
-    def film_similar(self, tmdb_id):
+    def film_similar(self, film):
         return []
 
     def search_films(self, q):
         ql = q.lower()
-        return [f for f in self.films_by_tmdb.values() if ql in f.get("title", "").lower()]
+        return [f for f in self.films.values() if ql in f.get("title", "").lower()]
 
     # Venues
     def get_venue(self, venue_id):
@@ -263,27 +354,39 @@ class Neo4jRepo(Repo):
             return [dict(r[key]) for r in session.run(cypher, **params) if r[key] is not None]
 
     # Films
-    def get_film(self, tmdb_id):
-        return self._one("MATCH (n:Film {tmdb_id: $t}) RETURN n", t=tmdb_id)
-
-    def film_festivals(self, tmdb_id):
-        return self._many(
-            "MATCH (:Film {tmdb_id: $t})-[:SCREENED_AT]->(n:Festival) RETURN n", t=tmdb_id
+    def resolve_ref(self, ref):
+        kind, value = parse_film_ref(ref)
+        if kind == "uuid":
+            return self._one("MATCH (n:Film {id: $v}) RETURN n", v=value)
+        if kind == "slug":
+            return self._one("MATCH (n:Film {slug: $v}) RETURN n", v=value)
+        if kind == "tmdb":
+            return self._one("MATCH (n:Film {tmdb_id: $v}) RETURN n", v=int(value))
+        return self._one(
+            "MATCH (n:Film) WHERE n[$k] = $v RETURN n LIMIT 1", k=f"ext_{kind}", v=value
         )
 
-    def film_awards(self, tmdb_id):
+    def all_films(self):
+        return self._many("MATCH (n:Film) RETURN n")
+
+    def film_festivals(self, film):
         return self._many(
-            "MATCH (:Film {tmdb_id: $t})-[:NOMINATED_FOR|WON]->(n:AwardCategory) RETURN n", t=tmdb_id
+            "MATCH (:Film {id: $t})-[:SCREENED_AT]->(n:Festival) RETURN n", t=film["id"]
         )
 
-    def film_distributors(self, tmdb_id):
+    def film_awards(self, film):
         return self._many(
-            "MATCH (:Film {tmdb_id: $t})-[:DISTRIBUTED_BY]->(n:Distributor) RETURN n", t=tmdb_id
+            "MATCH (:Film {id: $t})-[:NOMINATED_FOR|WON]->(n:AwardCategory) RETURN n", t=film["id"]
         )
 
-    def film_similar(self, tmdb_id):
+    def film_distributors(self, film):
         return self._many(
-            "MATCH (:Film {tmdb_id: $t})-[:SIMILAR_TO]-(n:Film) RETURN n", t=tmdb_id
+            "MATCH (:Film {id: $t})-[:DISTRIBUTED_BY]->(n:Distributor) RETURN n", t=film["id"]
+        )
+
+    def film_similar(self, film):
+        return self._many(
+            "MATCH (:Film {id: $t})-[:SIMILAR_TO]-(n:Film) RETURN n", t=film["id"]
         )
 
     def search_films(self, q):

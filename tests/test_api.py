@@ -21,7 +21,7 @@ def test_root_health(client):
     resp = client.get("/")
     assert resp.status_code == 200
     body = resp.json()
-    assert body["schema_version"] == "1.0.0"
+    assert body["schema_version"] == "1.1.0"
     assert body["data"]["status"] == "ok"
 
 
@@ -29,7 +29,7 @@ def test_schema_endpoint_returns_full_schema(client):
     resp = client.get("/schema")
     assert resp.status_code == 200
     schema = resp.json()
-    assert schema["version"] == "1.0.0"
+    assert schema["version"] == "1.1.0"
     assert schema["$id"] == "https://filmgraph.org/schema/v1"
     assert "Film" in schema["node_types"]
     assert "SCREENED_AT" in schema["edge_types"]
@@ -38,7 +38,7 @@ def test_schema_endpoint_returns_full_schema(client):
 def test_schema_version(client):
     resp = client.get("/schema/version")
     assert resp.status_code == 200
-    assert resp.json()["data"] == "1.0.0"
+    assert resp.json()["data"] == "1.1.0"
 
 
 def test_venue_search_watershed_gb(client):
@@ -46,7 +46,7 @@ def test_venue_search_watershed_gb(client):
     resp = client.get("/venues/search", params={"q": "watershed", "country": "GB"})
     assert resp.status_code == 200
     body = resp.json()
-    assert body["schema_version"] == "1.0.0"
+    assert body["schema_version"] == "1.1.0"
     items = body["data"]["items"]
     assert len(items) == 1
     assert items[0]["name"] == "Watershed"
@@ -78,7 +78,7 @@ def test_pagination_envelope_shape(client):
 
 def test_limit_cap_rejects_over_100(client):
     resp = client.get("/venues/search", params={"q": "e", "limit": 1000})
-    assert resp.status_code == 422
+    assert resp.status_code == 400
 
 
 def test_distributor_search(client):

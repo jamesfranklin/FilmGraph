@@ -24,7 +24,7 @@ from pathlib import Path
 # Repo root is on sys.path when run as `python seed/films/tmdb_fetch.py`.
 from filmgraph import config
 from filmgraph.engine.ingest.checkpoint import Checkpoint
-from filmgraph.engine.ingest.ids import film_id
+from filmgraph.engine.ingest.ids import film_id, film_slug
 from filmgraph.engine.validate.validate_node import validate_node
 from filmgraph.models.tmdb.client import TMDBClient
 
@@ -55,8 +55,18 @@ def to_film_node(movie: dict) -> dict:
     if len(release_date) >= 4 and release_date[:4].isdigit():
         record["year"] = int(release_date[:4])
 
+    if "year" in record:
+        # v1.1 identity: slug from the English title (TMDB ``title`` is the
+        # English-language title for the configured language) plus year.
+        record["slug"] = film_slug(record["title"], record["year"])
+    record["external_ids"] = {"tmdb": tmdb_id}
+    if movie.get("original_title") and movie["original_title"] != record["title"]:
+        record["original_title"] = movie["original_title"]
+        record["title_en"] = record["title"]
+
     if movie.get("imdb_id"):
         record["imdb_id"] = movie["imdb_id"]
+        record["external_ids"]["imdb"] = movie["imdb_id"]
 
     countries = [c["iso_3166_1"].upper() for c in movie.get("production_countries", []) if c.get("iso_3166_1")]
     if countries:
