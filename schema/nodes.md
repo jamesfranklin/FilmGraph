@@ -11,6 +11,9 @@ Conventions:
 - All node records may carry an optional `_source` provenance string; for
   manually curated seeds it documents where the record came from. It is required
   for `Practitioner` seed records and is stripped before Neo4j ingest.
+- All node records may carry an optional `_ext` object: node-specific data a
+  consumer may ignore (e.g. a private node's box-office series). It is the only
+  escape hatch past `additionalProperties: false`; document what you put there.
 - FilmGraph is a **global** standard — no geographic scope restrictions.
 
 ---

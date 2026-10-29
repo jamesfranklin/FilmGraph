@@ -21,6 +21,8 @@ Additive. Introduces node-portable film identity and the node contract.
 - **Added `external_ids`** (optional object) — `tmdb`, `imdb`, `letterboxd`,
   `wikidata`, `eidr`, `mx`. Resolution matches on these before `slug`.
 - **Added `title_en`** (nullable) and `original_title`.
+- **Added `_ext`** (optional object) to every node type — node-specific
+  extras, ignorable by consumers; see `docs/node-contract.md#envelope`.
 - **`tmdb_id` is no longer required.** It was the de facto primary key; many
   independent films — documentaries above all — have no TMDB record. `tmdb_id`
   and `imdb_id` remain valid, deprecated in favour of `external_ids`.
