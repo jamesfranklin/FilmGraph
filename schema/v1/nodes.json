@@ -14,8 +14,7 @@
           "imdb": { "type": "string", "pattern": "^tt[0-9]+$" },
           "letterboxd": { "type": "string" },
           "wikidata": { "type": "string", "pattern": "^Q[0-9]+$" },
-          "eidr": { "type": "string" },
-          "mx": { "type": "integer" }
+          "eidr": { "type": "string" }
         }
       },
       "tmdb_id": { "type": "integer" },

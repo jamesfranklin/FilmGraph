@@ -17,7 +17,7 @@ from filmgraph.api.repo import Repo
 
 router = APIRouter(prefix="/films", tags=["films"])
 
-EXTERNAL_ID_PARAMS = ("tmdb", "imdb", "letterboxd", "wikidata", "eidr", "mx")
+EXTERNAL_ID_PARAMS = ("tmdb", "imdb", "letterboxd", "wikidata", "eidr")
 
 
 def _film_or_404(repo: Repo, ref: str) -> dict:

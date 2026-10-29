@@ -15,7 +15,7 @@ serve that in the standard shape.
 | Layer | What it holds | Who may read | Example |
 | --- | --- | --- | --- |
 | **1 — public** | Schema, public seed, anything safe to publish | Anyone, rate-limited; key optional | The reference node, `filmgraph.org` |
-| **2 — private** | Showtimes, campaigns, booking economics, reserved edges (`EXHIBITED_AT`, `SHAPE_MATCHES`) | Keyed consumers only, scoped per key | `filmgraph.assemble.film` |
+| **2 — private** | Showtimes, campaigns, booking economics, reserved edges (`EXHIBITED_AT`, `SHAPE_MATCHES`) | Keyed consumers only, scoped per key | a distributor's or aggregator's private node |
 
 A private node returns **the same shapes** as a public one. The only differences
 are that every request needs a key and the manifest says `"layer": 2`. A node
@@ -33,15 +33,15 @@ Unauthenticated, even on a private node. Returns:
 {
   "schema_version": "1.1.0",
   "data": {
-    "node_id": "docsociety",
-    "name": "Doc Society FilmGraph node",
-    "operator": { "name": "Doc Society", "url": "https://docsociety.org" },
+    "node_id": "example",
+    "name": "Example Archive FilmGraph node",
+    "operator": { "name": "Example Archive", "url": "https://example.org" },
     "layer": 1,
     "auth": "required",
     "node_types": ["Film", "Organisation", "Festival"],
     "edge_types": ["FUNDED", "SCREENED_AT"],
     "capabilities": ["films.graph", "films.resolve", "mcp"],
-    "mcp": { "url": "https://filmgraph.docsociety.org/mcp" },
+    "mcp": { "url": "https://filmgraph.example.org/mcp" },
     "film_count": 412,
     "updated_at": "2026-10-29T12:00:00Z"
   }
@@ -159,7 +159,7 @@ pattern, not uniqueness.
 ### `external_ids`
 
 Known identifiers in other systems: `tmdb` (int), `imdb` (`tt…`),
-`letterboxd` (slug), `wikidata` (`Q…`), `eidr`, `mx` (Assemble). Additional
+`letterboxd` (slug), `wikidata` (`Q…`), `eidr`. Additional
 keys are allowed. `tmdb_id` / `imdb_id` at the top level are kept for v1
 compatibility and are deprecated.
 
@@ -171,7 +171,7 @@ Every endpoint that takes a film accepts a **reference** in any of three forms:
 | --- | --- | --- |
 | UUID | `3b2f…` | `id` exactly |
 | Slug | `parasite-2019` | `slug` exactly (case-insensitive) |
-| Prefixed external id | `tmdb:496243`, `imdb:tt6751668`, `mx:675` | `external_ids.<prefix>` |
+| Prefixed external id | `tmdb:496243`, `imdb:tt6751668`, `wikidata:Q61448040` | `external_ids.<prefix>` |
 
 Bare integers are **not** accepted (v1's `/films/{tmdb_id}` is retired; use
 `tmdb:` explicitly). A node that cannot match a reference returns `404`.
@@ -220,7 +220,7 @@ JSON dataset per film" means, and what the MCP `get_film` tool returns.
 {
   "schema_version": "1.1.0",
   "data": {
-    "node": "docsociety",
+    "node": "example",
     "film": { …Film node… },
     "edges": {
       "SCREENED_AT":   [ { "edge": { …edge props… }, "target": { …Festival node… } } ],
@@ -280,7 +280,7 @@ Rules:
 base URL:
 
 ```bash
-FILMGRAPH_NODE_URL=https://filmgraph.docsociety.org \
+FILMGRAPH_NODE_URL=https://filmgraph.example.org \
 FILMGRAPH_NODE_KEY=… \
 pytest conformance/
 ```

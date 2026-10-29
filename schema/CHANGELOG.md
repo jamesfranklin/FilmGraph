@@ -19,7 +19,7 @@ Additive. Introduces node-portable film identity and the node contract.
   so independent nodes arrive at the same identifier without a registry.
   Derivation and collision rules in `docs/node-contract.md`.
 - **Added `external_ids`** (optional object) — `tmdb`, `imdb`, `letterboxd`,
-  `wikidata`, `eidr`, `mx`. Resolution matches on these before `slug`.
+  `wikidata`, `eidr`, plus any operator-specific key. Resolution matches on these before `slug`.
 - **Added `title_en`** (nullable) and `original_title`.
 - **Added `_ext`** (optional object) to every node type — node-specific
   extras, ignorable by consumers; see `docs/node-contract.md#envelope`.

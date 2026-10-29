@@ -2,7 +2,7 @@
 
 Runs against any node::
 
-    FILMGRAPH_NODE_URL=https://filmgraph.docsociety.org FILMGRAPH_NODE_KEY=... pytest conformance/
+    FILMGRAPH_NODE_URL=https://filmgraph.example.org FILMGRAPH_NODE_KEY=... pytest conformance/
 
 With no ``FILMGRAPH_NODE_URL`` it runs in-process against the Python reference
 node loaded with ``tests/fixtures/films.jsonl`` — which is how CI keeps the

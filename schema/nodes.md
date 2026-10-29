@@ -24,7 +24,7 @@ Conventions:
 | --- | --- | --- | --- |
 | `id` | UUID | yes | Opaque, node-minted, immutable. Edges reference this. |
 | `slug` | string | yes | Derived match key: `<english-title>-<year>[-<n>]`. See [Film identity](../docs/node-contract.md#film-identity). Not globally unique. |
-| `external_ids` | object | no | `tmdb`, `imdb`, `letterboxd`, `wikidata`, `eidr`, `mx`, … Matched before `slug`. |
+| `external_ids` | object | no | `tmdb`, `imdb`, `letterboxd`, `wikidata`, `eidr`, plus any operator-specific key. Matched before `slug`. |
 | `tmdb_id` | integer | no | *Deprecated (v1.1)* — use `external_ids.tmdb`. Optional since 1.1.0. |
 | `imdb_id` | string | no | *Deprecated (v1.1)* — use `external_ids.imdb`. |
 | `title` | string | yes | Display title (English where one exists). |

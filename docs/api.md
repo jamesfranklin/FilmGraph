@@ -56,7 +56,7 @@ Codes: `bad_request` (400), `unauthorized` (401), `forbidden` (403),
 ### Films
 
 `{ref}` is a UUID, a slug (`parasite-2019`) or a prefixed external id
-(`tmdb:496243`, `imdb:tt6751668`, `mx:675`). Bare integers are not accepted.
+(`tmdb:496243`, `imdb:tt6751668`, `wikidata:Q61448040`). Bare integers are not accepted.
 
 | Method | Path | Description |
 | --- | --- | --- |
