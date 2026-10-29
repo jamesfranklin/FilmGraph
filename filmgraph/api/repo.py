@@ -66,6 +66,11 @@ class Repo:
     def search_films(self, q: str) -> list[dict]: ...
     def all_films(self) -> list[dict]: ...
 
+    def slug_collisions(self, slug: str) -> list[dict]:
+        """Films whose slug is ``<slug>-<n>`` (same title and year, different film)."""
+        prefix = slug + "-"
+        return [f for f in self.all_films() if f["slug"].startswith(prefix) and f["slug"][len(prefix):].isdigit()]
+
     def get_film(self, ref: str) -> dict | None:
         return self.resolve_ref(ref)
 
@@ -107,6 +112,8 @@ class Repo:
                 hit = self.resolve_ref(slug)
                 if hit:
                     add(hit, 0.8, "slug")
+                for other in self.slug_collisions(slug):
+                    add(other, 0.7, "slug_collision")
                 base = slug.rsplit("-", 1)[0]
                 for dy in (-1, 1):
                     hit = self.resolve_ref(f"{base}-{int(year) + dy}")

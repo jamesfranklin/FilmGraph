@@ -268,3 +268,17 @@ def test_venue_search_when_advertised(node, validate_node):
         one = node.get(f"/venues/{items[0]['id']}")
         assert one.status_code == 200
         assert one.json()["data"]["id"] == items[0]["id"]
+
+
+def test_resolve_endpoint_surfaces_collisions(node, sample_film):
+    """If the node holds <slug>-2 for the sample film, resolve must return it too."""
+    if not node.has("films.resolve"):
+        pytest.skip("node does not advertise films.resolve")
+    sibling = node.get(f"/films/{sample_film['slug']}-2")
+    if sibling.status_code != 200:
+        pytest.skip("sample film has no collision sibling")
+    title = sample_film.get("title_en") or sample_film["title"]
+    items = node.get("/films/resolve", title=title, year=sample_film["year"]).json()["data"]["items"]
+    by_id = {i["film"]["id"]: i for i in items}
+    assert sibling.json()["data"]["id"] in by_id
+    assert by_id[sibling.json()["data"]["id"]]["matched_on"] == "slug_collision"

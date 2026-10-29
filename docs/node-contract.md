@@ -185,10 +185,14 @@ Strategy order and confidence floor:
 
 1. Any supplied external id matches → `1.0`, `matched_on: external_ids.<k>`.
 2. Derived slug matches exactly → `0.8`, `slug`.
-3. Derived slug matches with year ±1 → `0.6`, `slug_year_adjacent`.
-4. Optional: node-specific fuzzy title match → `< 0.5`, `fuzzy`.
+3. Other films on this node with the same slug plus a collision suffix
+   (`<slug>-2`, `<slug>-3`, …) → `0.7`, `slug_collision`. Same title, same
+   year, different film: surface them so the consumer disambiguates rather
+   than silently taking the first.
+4. Derived slug matches with year ±1 → `0.6`, `slug_year_adjacent`.
+5. Optional: node-specific fuzzy title match → `< 0.5`, `fuzzy`.
 
-A node that implements only strategies 1–3 is conformant. Empty `items` is a
+A node that implements strategies 1–4 is conformant. Empty `items` is a
 `200`, not a `404`.
 
 ## Composite film document
