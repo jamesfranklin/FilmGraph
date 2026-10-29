@@ -137,6 +137,17 @@ Derivation (reference: `film_slug()` in `ids.py`):
    film with the same slug. The suffix is per-node and carries no meaning
    across nodes.
 
+   A node that keeps a unique-slug index (the reference, the template)
+   **MUST** assign the suffix at ingest, so every stored film has one stable
+   slug. A node that resolves against stores it does not own, with no index of
+   its own, **MAY** instead return the bare slug for every film that shares it,
+   provided that: `GET /films/<slug>` returns one of them deterministically
+   (the oldest by the node's own ordering) and lists the others' ids in
+   `_ext.slug_collisions`; `GET /films/<slug>-<n>` returns the nth in that
+   same order; and `/films/resolve` surfaces all of them (`slug` for the
+   first, `slug_collision` for the rest). Either way a consumer holding only
+   a slug can reach every film behind it.
+
 Which year: the year of the film's **first public screening** (festival
 premiere counts). Not copyright year, not theatrical year. When nodes disagree
 by one year the resolver tolerates it (below).
@@ -185,8 +196,9 @@ Strategy order and confidence floor:
 
 1. Any supplied external id matches → `1.0`, `matched_on: external_ids.<k>`.
 2. Derived slug matches exactly → `0.8`, `slug`.
-3. Other films on this node with the same slug plus a collision suffix
-   (`<slug>-2`, `<slug>-3`, …) → `0.7`, `slug_collision`. Same title, same
+3. Other films on this node with the same base slug — stored with a
+   collision suffix (`<slug>-2`, `<slug>-3`, …) or, on a node without a slug
+   index, sharing the bare slug — → `0.7`, `slug_collision`. Same title, same
    year, different film: surface them so the consumer disambiguates rather
    than silently taking the first.
 4. Derived slug matches with year ±1 → `0.6`, `slug_year_adjacent`.
