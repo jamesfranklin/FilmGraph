@@ -1,13 +1,28 @@
 {
   "Film": {
     "type": "object",
-    "required": ["id", "tmdb_id", "title", "year"],
+    "required": ["id", "slug", "title", "year"],
     "additionalProperties": false,
     "properties": {
       "id": { "type": "string", "format": "uuid" },
+      "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*-[0-9]{4}(?:-[0-9]+)?$" },
+      "external_ids": {
+        "type": "object",
+        "additionalProperties": { "type": ["string", "integer"] },
+        "properties": {
+          "tmdb": { "type": "integer" },
+          "imdb": { "type": "string", "pattern": "^tt[0-9]+$" },
+          "letterboxd": { "type": "string" },
+          "wikidata": { "type": "string", "pattern": "^Q[0-9]+$" },
+          "eidr": { "type": "string" },
+          "mx": { "type": "integer" }
+        }
+      },
       "tmdb_id": { "type": "integer" },
       "imdb_id": { "type": "string" },
       "title": { "type": "string", "minLength": 1 },
+      "title_en": { "type": ["string", "null"] },
+      "original_title": { "type": "string" },
       "year": { "type": "integer", "minimum": 1888 },
       "origin_country": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2}$" } },
       "language": { "type": "string" },

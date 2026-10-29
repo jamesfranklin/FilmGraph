@@ -55,7 +55,7 @@ def test_film_bad_enum_fails():
 
 
 def test_valid_film_passes():
-    film = {"id": UUID, "tmdb_id": 42, "title": "X", "year": 2020, "budget_tier": "low"}
+    film = {"id": UUID, "slug": "x-2020", "tmdb_id": 42, "title": "X", "year": 2020, "budget_tier": "low"}
     assert validate_node(film, "Film") == []
 
 

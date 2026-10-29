@@ -29,7 +29,7 @@ CACHE_DIR = REPO_ROOT / "cache"
 CHECKPOINT_DIR = CACHE_DIR / "checkpoints"
 
 # Current schema version. Kept in sync with schema/v1/filmgraph.json.
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 
 
 def _env(name: str, default: str | None = None) -> str | None:
@@ -48,6 +48,17 @@ TMDB_CACHE_PATH = _env("TMDB_CACHE_PATH", str(CACHE_DIR / "tmdb"))
 
 # Public API
 FILMGRAPH_API_KEY = _env("FILMGRAPH_API_KEY")
+
+# Node identity (docs/node-contract.md#node-manifest)
+NODE_ID = _env("FILMGRAPH_NODE_ID", "reference")
+NODE_NAME = _env("FILMGRAPH_NODE_NAME", "FilmGraph reference node")
+NODE_OPERATOR_NAME = _env("FILMGRAPH_NODE_OPERATOR_NAME", "FilmGraph")
+NODE_OPERATOR_URL = _env("FILMGRAPH_NODE_OPERATOR_URL", "https://filmgraph.org")
+NODE_LAYER = int(_env("FILMGRAPH_NODE_LAYER", "1"))
+# "none" | "optional" | "required". The reference node is public: a key only
+# raises the rate limit.
+NODE_AUTH = _env("FILMGRAPH_NODE_AUTH", "optional")
+NODE_MCP_URL = _env("FILMGRAPH_NODE_MCP_URL")
 
 # Sync
 FILMGRAPH_SYNC_KEY = _env("FILMGRAPH_SYNC_KEY")

@@ -44,7 +44,9 @@ Apache 2.0 licensed. Published as independent open infrastructure.
 | Schema | [`schema/`](schema/) | Versioned JSON Schema (`v1`) plus human-readable docs |
 | Seed data | [`seed/`](seed/) | Public, committed seed datasets and ingest scripts |
 | Engine | [`filmgraph/engine/`](filmgraph/engine/) | Validation, Neo4j ingest, enrichment, export |
-| API | [`filmgraph/api/`](filmgraph/api/) | Thin read-only FastAPI over the public graph |
+| API | [`filmgraph/api/`](filmgraph/api/) | Thin read-only FastAPI over the public graph — the reference **node** |
+| Node contract | [`docs/node-contract.md`](docs/node-contract.md) | What every FilmGraph node (any stack) must implement |
+| Conformance | [`conformance/`](conformance/) | Test suite that runs against any node URL |
 | Sync | [`filmgraph/sync/`](filmgraph/sync/) | Webhook receiver for instance sync |
 | Models | [`filmgraph/models/`](filmgraph/models/) | Model-layer manifests and converters |
 
@@ -81,6 +83,18 @@ curl "http://localhost:8000/schema/version"
 See [`docs/getting-started.md`](docs/getting-started.md) and
 [`docs/running-your-own-instance.md`](docs/running-your-own-instance.md) for the
 full walkthrough.
+
+## Running a node
+
+A FilmGraph node is any service — this reference, a Cloudflare Worker, a wrapper
+over your own systems — that implements [`docs/node-contract.md`](docs/node-contract.md):
+a manifest at `/.well-known/filmgraph`, films addressable by UUID, slug or
+external id, a composite `/films/{ref}/graph` document, and a fixed MCP tool set.
+Check any node with:
+
+```bash
+FILMGRAPH_NODE_URL=https://your-node.example FILMGRAPH_NODE_KEY=… pytest conformance/
+```
 
 ## Validating contributed data
 

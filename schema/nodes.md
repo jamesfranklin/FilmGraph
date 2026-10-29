@@ -19,11 +19,15 @@ Conventions:
 
 | Property | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `id` | UUID | yes | |
-| `tmdb_id` | integer | yes | Unique (enforced by DB constraint) |
-| `imdb_id` | string | no | |
-| `title` | string | yes | |
-| `year` | integer | yes | |
+| `id` | UUID | yes | Opaque, node-minted, immutable. Edges reference this. |
+| `slug` | string | yes | Derived match key: `<english-title>-<year>[-<n>]`. See [Film identity](../docs/node-contract.md#film-identity). Not globally unique. |
+| `external_ids` | object | no | `tmdb`, `imdb`, `letterboxd`, `wikidata`, `eidr`, `mx`, … Matched before `slug`. |
+| `tmdb_id` | integer | no | *Deprecated (v1.1)* — use `external_ids.tmdb`. Optional since 1.1.0. |
+| `imdb_id` | string | no | *Deprecated (v1.1)* — use `external_ids.imdb`. |
+| `title` | string | yes | Display title (English where one exists). |
+| `title_en` | string \| null | no | English title, or `null` when the film has none. |
+| `original_title` | string | no | |
+| `year` | integer | yes | Release year used in the slug — see identity rules for which year. |
 | `origin_country` | string[] | no | ISO alpha-2 |
 | `language` | string | no | |
 | `genres` | string[] | no | |

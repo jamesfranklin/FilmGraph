@@ -50,3 +50,8 @@ def paginate(items: list[dict], page: int, limit: int) -> dict:
             "items": window,
         },
     }
+
+
+def error_envelope(code: str, detail: str) -> dict:
+    """Error shape per docs/node-contract.md#envelope."""
+    return {"schema_version": config.SCHEMA_VERSION, "error": code, "detail": detail}
