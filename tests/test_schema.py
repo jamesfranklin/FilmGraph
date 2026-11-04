@@ -30,7 +30,7 @@ def test_node_schemas_are_valid_json_schema():
 
 def test_edge_schemas_are_valid_json_schema():
     edges = _load("edges.json")
-    assert len(edges) == 18
+    assert len(edges) == 19
     for name, spec in edges.items():
         assert isinstance(spec["source"], list) and spec["source"], name
         assert isinstance(spec["target"], list) and spec["target"], name
