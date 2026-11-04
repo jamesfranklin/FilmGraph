@@ -9,6 +9,14 @@ Versioning rules:
 - **Major (v2):** breaking changes require a migration script at
   `schema/v2/migrate_from_v1.py`. Instances must approve before syncing.
 
+## [1.1.1] — 2026-11-04
+
+Additive. `PRESENTED_AT` (Film → Market): a film pitched or presented at a
+market, forum or pitching programme. Market nodes existed since 1.0 with no
+edge type connecting a film to one, so a funder's pitching history (Good Pitch,
+IDFA Forum, Hot Docs Forum) had nowhere to go. Required `year`; optional
+`section`, `programme`, `outcome`.
+
 ## [1.1.0] — 2026-10-29
 
 Additive. Introduces node-portable film identity and the node contract.

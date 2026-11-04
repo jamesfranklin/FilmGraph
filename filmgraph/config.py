@@ -29,7 +29,7 @@ CACHE_DIR = REPO_ROOT / "cache"
 CHECKPOINT_DIR = CACHE_DIR / "checkpoints"
 
 # Current schema version. Kept in sync with schema/v1/filmgraph.json.
-SCHEMA_VERSION = "1.1.0"
+SCHEMA_VERSION = "1.1.1"
 
 
 def _env(name: str, default: str | None = None) -> str | None:

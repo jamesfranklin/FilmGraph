@@ -12,13 +12,13 @@ conformance — is specified in [`node-contract.md`](node-contract.md).
 Every data response is wrapped:
 
 ```json
-{ "schema_version": "1.1.0", "data": { ... } }
+{ "schema_version": "1.1.1", "data": { ... } }
 ```
 
 List responses carry pagination metadata:
 
 ```json
-{ "schema_version": "1.1.0", "data": { "page": 1, "limit": 20, "count": 42, "items": [ ... ] } }
+{ "schema_version": "1.1.1", "data": { "page": 1, "limit": 20, "count": 42, "items": [ ... ] } }
 ```
 
 All list endpoints accept `?page=1&limit=20` (max `limit` 100).
@@ -37,7 +37,7 @@ path except the manifest and schema then returns `401` without a valid key.
 ## Errors
 
 ```json
-{ "schema_version": "1.1.0", "error": "not_found", "detail": "Film tmdb:1 not found" }
+{ "schema_version": "1.1.1", "error": "not_found", "detail": "Film tmdb:1 not found" }
 ```
 
 Codes: `bad_request` (400), `unauthorized` (401), `forbidden` (403),

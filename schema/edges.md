@@ -31,6 +31,7 @@ types, the `properties` JSON Schema (with required/optional), and flags:
 | `DISTRIBUTED_BY` | Film → Distributor | `territory` | `release_date`, `deal_type` |
 | `WORKED_ON` | Practitioner → Film | `role` | `year`, `territory` |
 | `FUNDED` | Organisation → Film | — | `funding_type`, `year` |
+| `PRESENTED_AT` | Film → Market | `year` | `section`, `programme`, `outcome` — a pitch, forum or market presentation (Good Pitch, IDFA Forum, Hot Docs Forum); `section` is the strand (`pitch`, `rough_cut`, `showcase`), `programme` the named programme, `outcome` what came of it |
 | `REPRESENTED_BY` | Film → Organisation | — | `role`, `territory`, `year` |
 | `MEMBER_OF` | Practitioner → Organisation | — | `start_year`, `end_year` |
 | `EMPLOYED_BY` | Practitioner → Distributor | — | `role`, `start_year`, `end_year` |

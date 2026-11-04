@@ -13,7 +13,7 @@ def _load(name):
 
 def test_filmgraph_json_metadata():
     fg = _load("filmgraph.json")
-    assert fg["version"] == "1.1.0"
+    assert fg["version"] == "1.1.1"
     assert fg["version"] == config.SCHEMA_VERSION
     assert fg["$id"] == "https://filmgraph.org/schema/v1"
     assert fg["node_types"] == {"$ref": "nodes.json"}
@@ -30,7 +30,7 @@ def test_node_schemas_are_valid_json_schema():
 
 def test_edge_schemas_are_valid_json_schema():
     edges = _load("edges.json")
-    assert len(edges) == 18
+    assert len(edges) == 19
     for name, spec in edges.items():
         assert isinstance(spec["source"], list) and spec["source"], name
         assert isinstance(spec["target"], list) and spec["target"], name
