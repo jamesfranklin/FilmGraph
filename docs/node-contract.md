@@ -31,7 +31,7 @@ Unauthenticated, even on a private node. Returns:
 
 ```json
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.1.1",
   "data": {
     "node_id": "example",
     "name": "Example Archive FilmGraph node",
@@ -79,14 +79,14 @@ Unauthenticated, even on a private node. Returns:
 Unchanged from v1:
 
 ```json
-{ "schema_version": "1.1.0", "data": { ... } }
-{ "schema_version": "1.1.0", "data": { "page": 1, "limit": 20, "count": 42, "items": [ ... ] } }
+{ "schema_version": "1.1.1", "data": { ... } }
+{ "schema_version": "1.1.1", "data": { "page": 1, "limit": 20, "count": 42, "items": [ ... ] } }
 ```
 
 Errors:
 
 ```json
-{ "schema_version": "1.1.0", "error": "not_found", "detail": "Film tmdb:1 not found" }
+{ "schema_version": "1.1.1", "error": "not_found", "detail": "Film tmdb:1 not found" }
 ```
 
 `error` is a stable snake_case code: `not_found`, `unauthorized`, `forbidden`,
@@ -185,7 +185,7 @@ GET /films/resolve?title=&year=&tmdb=&imdb=&…
 Returns candidates with a confidence, best first:
 
 ```json
-{ "schema_version": "1.1.0", "data": { "items": [
+{ "schema_version": "1.1.1", "data": { "items": [
   { "film": { …Film node… }, "confidence": 1.0, "matched_on": "external_ids.tmdb" },
   { "film": { … }, "confidence": 0.8, "matched_on": "slug" },
   { "film": { … }, "confidence": 0.6, "matched_on": "slug_year_adjacent" }
@@ -218,7 +218,7 @@ JSON dataset per film" means, and what the MCP `get_film` tool returns.
 
 ```json
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.1.1",
   "data": {
     "node": "example",
     "film": { …Film node… },
